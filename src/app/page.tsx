@@ -8,6 +8,8 @@ import { CourtGrid } from '@/components/CourtGrid';
 import { ScheduleTable } from '@/components/ScheduleTable';
 import { PlayerRosterDrawer } from '@/components/PlayerRosterDrawer';
 import { SessionSettingsPanel } from '@/components/SessionSettingsPanel';
+import { NavigationDrawer, AppFeatureTab } from '@/components/NavigationDrawer';
+import { ScheduleView } from '@/components/ScheduleView';
 
 export default function DashboardPage() {
   const {
@@ -26,11 +28,14 @@ export default function DashboardPage() {
     toggleActive,
     archivePlayer,
     bulkSetActive,
+    setActivePlayersByNames,
     updateSettings,
     resetSession,
     setAsDefault,
   } = useBadmintonSession();
 
+  const [activeTab, setActiveTab] = useState<AppFeatureTab>('schedule');
+  const [navOpen, setNavOpen] = useState(false);
   const [rosterOpen, setRosterOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
 
@@ -48,11 +53,12 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen min-w-0 flex flex-col bg-slate-50 dark:bg-zinc-950 text-slate-900 dark:text-zinc-100">
-      {/* Top Application Bar */}
+      {/* Top Application Bar with Navigation Hamburger */}
       <AppTopBar
         sessionName={state.settings.sessionName}
         courtCount={state.settings.courtCount}
         gamesToGenerate={state.settings.gamesToGenerate}
+        onOpenNavigation={() => setNavOpen(true)}
         onOpenSettings={() => setSettingsOpen(true)}
       />
 
@@ -62,70 +68,98 @@ export default function DashboardPage() {
           Intelligent Badminton Matchmaking &amp; Court Scheduling Dashboard
         </h1>
 
-        {/* 1. Direct Quick Configuration Bar for Court Count, Games, and Player */}
-        <QuickConfigBar
-          courtCount={state.settings.courtCount}
-          gamesToGenerate={state.settings.gamesToGenerate}
-          onUpdateCourtCount={(courts) => updateSettings({ courtCount: courts })}
-          onUpdateGamesToGenerate={(games) => updateSettings({ gamesToGenerate: games })}
-          onShuffle={shuffleSchedule}
-          onOpenSettings={() => setSettingsOpen(true)}
-          canGenerate={canGenerate}
-          activeCount={stats.activePlayers}
-          totalCount={stats.totalPlayers}
-          onOpenPlayer={() => setRosterOpen(true)}
-        />
+        {activeTab === 'schedule' ? (
+          <ScheduleView
+            sessionName={state.settings.sessionName}
+            courtCount={state.settings.courtCount}
+            players={state.players}
+            onBackToRandomGames={() => setActiveTab('random-games')}
+            onPullPlayersToShuffle={(names, courtName) => {
+              setActivePlayersByNames(names, courtName);
+              setActiveTab('random-games');
+            }}
+            onAddPlayerToDatabase={(name, skill) => {
+              addPlayer(name, skill);
+            }}
+          />
+        ) : (
+          <>
+            {/* 1. Direct Quick Configuration Bar for Court Count, Games, and Player */}
+            <QuickConfigBar
+              courtCount={state.settings.courtCount}
+              gamesToGenerate={state.settings.gamesToGenerate}
+              onUpdateCourtCount={(courts) => updateSettings({ courtCount: courts })}
+              onUpdateGamesToGenerate={(games) => updateSettings({ gamesToGenerate: games })}
+              onShuffle={shuffleSchedule}
+              onOpenSettings={() => setSettingsOpen(true)}
+              canGenerate={canGenerate}
+              activeCount={stats.activePlayers}
+              totalCount={stats.totalPlayers}
+              onOpenPlayer={() => setRosterOpen(true)}
+            />
 
-        {/* 2. Interactive Visual Courts */}
-        <section aria-labelledby="section-live-courts" className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2
-                id="section-live-courts"
-                className="text-base font-semibold text-slate-900 dark:text-zinc-100"
-              >
-                Court Allocation &amp; Visual Pairs
+            {/* 2. Interactive Visual Courts */}
+            <section aria-labelledby="section-live-courts" className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2
+                    id="section-live-courts"
+                    className="text-base font-semibold text-slate-900 dark:text-zinc-100"
+                  >
+                    Court Allocation &amp; Visual Pairs
+                  </h2>
+                  <p className="text-xs text-slate-500 dark:text-zinc-400">
+                    {currentRound
+                      ? `Game ${currentRound.number} of ${state.rounds.length} — Balanced skill & mentor pairs`
+                      : 'Awaiting random shuffle'}
+                  </p>
+                </div>
+              </div>
+
+              {/* Court Grid with Game Navigation */}
+              <CourtGrid
+                currentRound={currentRound}
+                rounds={state.rounds}
+                totalRounds={state.rounds.length}
+                selectedRoundIndex={selectedRoundIndex}
+                completedUpToIndex={completedUpToIndex}
+                onSelectRoundIndex={setSelectedRoundIndex}
+                onToggleMatchComplete={toggleMatchComplete}
+                players={state.players}
+                onShuffle={shuffleSchedule}
+                canGenerate={canGenerate}
+              />
+            </section>
+
+            {/* 4. Match Schedule Table: Clean Unified Random Shuffled Log (NO Live/Upcoming/History Tabs) */}
+            <section aria-labelledby="section-schedule-log">
+              <h2 id="section-schedule-log" className="sr-only">
+                Match Schedule Random Shuffled Log
               </h2>
-              <p className="text-xs text-slate-500 dark:text-zinc-400">
-                {currentRound
-                  ? `Game ${currentRound.number} of ${state.rounds.length} — Balanced skill & mentor pairs`
-                  : 'Awaiting random shuffle'}
-              </p>
-            </div>
-          </div>
-
-          {/* Court Grid with Game Navigation */}
-          <CourtGrid
-            currentRound={currentRound}
-            rounds={state.rounds}
-            totalRounds={state.rounds.length}
-            selectedRoundIndex={selectedRoundIndex}
-            completedUpToIndex={completedUpToIndex}
-            onSelectRoundIndex={setSelectedRoundIndex}
-            onToggleMatchComplete={toggleMatchComplete}
-            players={state.players}
-            onShuffle={shuffleSchedule}
-            canGenerate={canGenerate}
-          />
-        </section>
-
-        {/* 4. Match Schedule Table: Clean Unified Random Shuffled Log (NO Live/Upcoming/History Tabs) */}
-        <section aria-labelledby="section-schedule-log">
-          <h2 id="section-schedule-log" className="sr-only">
-            Match Schedule Random Shuffled Log
-          </h2>
-          <ScheduleTable
-            rounds={state.rounds}
-            players={state.players}
-            settings={state.settings}
-            onShuffle={shuffleSchedule}
-            onSelectRound={setSelectedRoundIndex}
-            selectedRoundIndex={selectedRoundIndex}
-            completedUpToIndex={completedUpToIndex}
-            onToggleMatchComplete={toggleMatchComplete}
-          />
-        </section>
+              <ScheduleTable
+                rounds={state.rounds}
+                players={state.players}
+                settings={state.settings}
+                onShuffle={shuffleSchedule}
+                onSelectRound={setSelectedRoundIndex}
+                selectedRoundIndex={selectedRoundIndex}
+                completedUpToIndex={completedUpToIndex}
+                onToggleMatchComplete={toggleMatchComplete}
+              />
+            </section>
+          </>
+        )}
       </main>
+
+      {/* Slide-out Navigation Drawer (Hamburger Menu) */}
+      <NavigationDrawer
+        open={navOpen}
+        onClose={() => setNavOpen(false)}
+        activeTab={activeTab}
+        onSelectTab={setActiveTab}
+        sessionName={state.settings.sessionName}
+        courtCount={state.settings.courtCount}
+      />
 
       {/* Slide-out Player Management Drawer */}
       <PlayerRosterDrawer

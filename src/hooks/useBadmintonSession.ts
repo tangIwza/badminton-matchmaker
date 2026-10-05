@@ -29,6 +29,7 @@ type Action =
   | { type: 'TOGGLE_ACTIVE'; payload: { id: PlayerId } }
   | { type: 'ARCHIVE_PLAYER'; payload: { id: PlayerId } }
   | { type: 'BULK_SET_ACTIVE'; payload: { active: boolean } }
+  | { type: 'SET_ACTIVE_PLAYERS_BY_NAMES'; payload: { names: string[]; courtName?: string } }
   | { type: 'UPDATE_SETTINGS'; payload: Partial<SessionSettings> }
   | { type: 'SET_SELECTED_ROUND'; payload: number }
   | { type: 'TOGGLE_MATCH_COMPLETE'; payload: { matchId: string } }
@@ -276,6 +277,48 @@ function sessionReducer(state: SessionState, action: Action): SessionState {
       };
     }
 
+    case 'SET_ACTIVE_PLAYERS_BY_NAMES': {
+      const nameSet = new Set(action.payload.names);
+      const updatedPlayersList = state.players.map((p) =>
+        p.archived ? p : { ...p, active: nameSet.has(p.name), consecutiveRests: 0 }
+      );
+
+      const eligible = updatedPlayersList.filter((p) => p.active && !p.archived);
+      const newSettings: SessionSettings = {
+        ...state.settings,
+        sessionName: action.payload.courtName || state.settings.sessionName,
+        courtCount:
+          eligible.length >= 8
+            ? Math.max(1, Math.floor(eligible.length / 4))
+            : state.settings.courtCount,
+      };
+
+      if (eligible.length >= 4) {
+        const newSeed = state.baseSeed + Math.floor(Math.random() * 10000) + 7919;
+        const { rounds, players: rebalancedPlayers, backToBackBenchEvents } =
+          generateSessionSchedule(updatedPlayersList, newSettings, newSeed);
+
+        return {
+          ...state,
+          undoStack: pushUndo(state),
+          players: rebalancedPlayers,
+          settings: newSettings,
+          rounds,
+          selectedRoundIndex: 0,
+          completedUpToIndex: 0,
+          baseSeed: newSeed,
+          backToBackBenchEvents,
+        };
+      }
+
+      return {
+        ...state,
+        undoStack: pushUndo(state),
+        players: updatedPlayersList,
+        settings: newSettings,
+      };
+    }
+
     case 'UPDATE_SETTINGS': {
       const newSettings = {
         ...state.settings,
@@ -417,6 +460,8 @@ export function useBadmintonSession() {
     archivePlayer: (id: PlayerId) => dispatch({ type: 'ARCHIVE_PLAYER', payload: { id } }),
     bulkSetActive: (active: boolean) =>
       dispatch({ type: 'BULK_SET_ACTIVE', payload: { active } }),
+    setActivePlayersByNames: (names: string[], courtName?: string) =>
+      dispatch({ type: 'SET_ACTIVE_PLAYERS_BY_NAMES', payload: { names, courtName } }),
     updateSettings: (settings: Partial<SessionSettings>) =>
       dispatch({ type: 'UPDATE_SETTINGS', payload: settings }),
     undo: () => dispatch({ type: 'UNDO' }),
