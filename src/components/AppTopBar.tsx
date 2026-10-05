@@ -24,9 +24,6 @@ export interface AppTopBarProps {
 }
 
 export const AppTopBar: React.FC<AppTopBarProps> = ({
-  sessionName,
-  courtCount,
-  gamesToGenerate,
   onOpenNavigation,
   onOpenSettings,
 }) => {
@@ -54,9 +51,6 @@ export const AppTopBar: React.FC<AppTopBarProps> = ({
                 PRO
               </span>
             </div>
-            <p className="text-xs text-slate-500 dark:text-zinc-400 truncate font-medium">
-              {sessionName} · {courtCount} courts · {gamesToGenerate} games
-            </p>
           </div>
         </div>
 
