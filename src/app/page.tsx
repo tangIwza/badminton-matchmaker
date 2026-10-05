@@ -92,15 +92,6 @@ export default function DashboardPage() {
                   : 'Awaiting random shuffle'}
               </p>
             </div>
-
-            {currentRound && (
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                <span>
-                  Game {currentRound.number} of {state.rounds.length}
-                </span>
-              </span>
-            )}
           </div>
 
           {/* Court Grid with Game Navigation */}

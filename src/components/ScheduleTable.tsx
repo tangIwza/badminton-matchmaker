@@ -115,11 +115,10 @@ export const ScheduleTable: React.FC<ScheduleTableProps> = ({
         </div>
 
         {/* Filter bar & Player search */}
-        <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="mt-3 flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between">
           {/* Court filter pills */}
-          <div className="flex min-w-0 flex-nowrap items-center gap-2 overflow-x-auto scrollbar-none">
-            <div className="order-1 flex shrink-0 items-center gap-1.5 pb-1 scrollbar-none sm:pb-0">
-            <span className="text-[11px] font-medium text-slate-400 dark:text-zinc-500 flex items-center gap-1 mr-1">
+          <div className="flex min-w-0 items-center gap-1.5 overflow-x-auto scrollbar-none pb-1 sm:pb-0">
+            <span className="text-[11px] font-medium text-slate-400 dark:text-zinc-500 flex items-center gap-1 mr-1 shrink-0">
               <Filter className="h-3 w-3" />
               <span>Court:</span>
             </span>
@@ -129,7 +128,7 @@ export const ScheduleTable: React.FC<ScheduleTableProps> = ({
               id="schedule-filter-court-all"
               onClick={() => setFilterCourt('all')}
               className={cn(
-                'px-2.5 py-1 text-xs font-semibold rounded-lg transition-all',
+                'px-2.5 py-1 text-xs font-semibold rounded-lg transition-all shrink-0',
                 filterCourt === 'all'
                   ? 'bg-slate-900 text-white dark:bg-zinc-100 dark:text-zinc-900 shadow-xs'
                   : 'bg-slate-100 dark:bg-zinc-800 text-slate-600 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-zinc-200'
@@ -159,47 +158,47 @@ export const ScheduleTable: React.FC<ScheduleTableProps> = ({
                 </button>
               );
             })}
+          </div>
+
+          {/* Line under the filter: Player search & Actions (Shuffle, Export) */}
+          <div className="flex min-w-0 items-center gap-2">
+            <div className="relative flex-1 min-w-0 sm:w-60">
+              <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-slate-400 dark:text-zinc-500" />
+              <Input
+                type="text"
+                placeholder="Search player name..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-8 text-xs h-8 w-full"
+              />
             </div>
 
-            <div className="order-2 ml-auto flex shrink-0 items-center gap-2">
-              {onShuffle && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={onShuffle}
-                  className="gap-1.5 text-xs text-slate-700 dark:text-zinc-300"
-                  title="Random shuffle all matches"
-                >
-                  <Shuffle className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
-                  <span className="sm:hidden">Shuffle</span>
-                  <span className="hidden sm:inline">Reshuffle</span>
-                </Button>
-              )}
-
+            {onShuffle && (
               <Button
                 variant="outline"
                 size="sm"
-                id="btn-export-csv"
-                onClick={handleExportCsv}
-                className="gap-1.5 text-xs text-slate-700 dark:text-zinc-300"
+                onClick={onShuffle}
+                className="gap-1.5 text-xs text-slate-700 dark:text-zinc-300 shrink-0 h-8 px-2 sm:px-2.5"
+                title="Random shuffle all matches"
               >
-                <Download className="h-3.5 w-3.5" />
-                <span className="sm:hidden">Export</span>
-                <span className="hidden sm:inline">Export CSV</span>
+                <Shuffle className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
+                <span className="sm:hidden">Shuffle</span>
+                <span className="hidden sm:inline">Reshuffle</span>
               </Button>
-            </div>
-          </div>
+            )}
 
-          {/* Search by player name */}
-          <div className="relative w-full sm:w-64">
-            <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-slate-400 dark:text-zinc-500" />
-            <Input
-              type="text"
-              placeholder="Search player name..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-8 text-xs h-8"
-            />
+            <Button
+              variant="outline"
+              size="sm"
+              id="btn-export-csv"
+              onClick={handleExportCsv}
+              className="gap-1.5 text-xs text-slate-700 dark:text-zinc-300 shrink-0 h-8 px-2 sm:px-2.5"
+              title="Export schedule to CSV"
+            >
+              <Download className="h-3.5 w-3.5" />
+              <span className="sm:hidden">Export</span>
+              <span className="hidden sm:inline">Export CSV</span>
+            </Button>
           </div>
         </div>
       </CardHeader>
