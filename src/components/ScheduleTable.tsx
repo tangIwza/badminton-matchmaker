@@ -6,8 +6,8 @@ import { Card, CardHeader, CardTitle, CardContent } from './ui/Card';
 import { Input } from './ui/Input';
 import { Button } from './ui/Button';
 import { SkillBadge } from './SkillBadge';
-import { exportScheduleToCsv } from '@/lib/csv';
-import { Download, Search, Calendar, Shuffle, Filter, Check } from 'lucide-react';
+import { exportScheduleToPdf } from '@/lib/pdf';
+import { FileDown, Search, Calendar, Shuffle, Filter, Check } from 'lucide-react';
 import { cn } from '@/lib/cn';
 
 export interface ScheduleTableProps {
@@ -88,9 +88,32 @@ export const ScheduleTable: React.FC<ScheduleTableProps> = ({
     [rounds]
   );
 
-  const handleExportCsv = () => {
-    exportScheduleToCsv(rounds, players, settings.sessionName);
+  const handleExportPdf = () => {
+    exportScheduleToPdf(
+      filteredRounds,
+      players,
+      settings.sessionName,
+      settings.courtCount,
+      {
+        filterCourt,
+        searchQuery: searchQuery.trim() || undefined,
+      }
+    );
   };
+
+  const exportBtnLabel = useMemo(() => {
+    if (filterCourt !== 'all') {
+      return `Export Court ${filterCourt} (A4)`;
+    }
+    return 'Export PDF (A4)';
+  }, [filterCourt]);
+
+  const exportBtnMobileLabel = useMemo(() => {
+    if (filterCourt !== 'all') {
+      return `Court ${filterCourt} PDF`;
+    }
+    return 'PDF';
+  }, [filterCourt]);
 
   return (
     <Card className="min-w-0 border-slate-200 dark:border-zinc-800">
@@ -111,7 +134,6 @@ export const ScheduleTable: React.FC<ScheduleTableProps> = ({
               </div>
             </div>
           </div>
-
         </div>
 
         {/* Filter bar & Player search */}
@@ -160,7 +182,7 @@ export const ScheduleTable: React.FC<ScheduleTableProps> = ({
             })}
           </div>
 
-          {/* Line under the filter: Player search & Actions (Shuffle, Export) */}
+          {/* Line under the filter: Player search & Actions (Shuffle, Export PDF) */}
           <div className="flex min-w-0 items-center gap-2">
             <div className="relative flex-1 min-w-0 sm:w-60">
               <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-slate-400 dark:text-zinc-500" />
@@ -190,14 +212,18 @@ export const ScheduleTable: React.FC<ScheduleTableProps> = ({
             <Button
               variant="outline"
               size="sm"
-              id="btn-export-csv"
-              onClick={handleExportCsv}
-              className="gap-1.5 text-xs text-slate-700 dark:text-zinc-300 shrink-0 h-8 px-2 sm:px-2.5"
-              title="Export schedule to CSV"
+              id="btn-export-pdf"
+              onClick={handleExportPdf}
+              className="gap-1.5 text-xs text-slate-700 dark:text-zinc-300 shrink-0 h-8 px-2 sm:px-2.5 hover:border-rose-400 hover:text-rose-600 dark:hover:text-rose-400 transition-colors"
+              title={
+                filterCourt !== 'all'
+                  ? `Export Court ${filterCourt} schedule to PDF (A4)`
+                  : 'Export match schedule to PDF (A4 Template)'
+              }
             >
-              <Download className="h-3.5 w-3.5" />
-              <span className="sm:hidden">Export</span>
-              <span className="hidden sm:inline">Export CSV</span>
+              <FileDown className="h-3.5 w-3.5 text-rose-500" />
+              <span className="sm:hidden">{exportBtnMobileLabel}</span>
+              <span className="hidden sm:inline">{exportBtnLabel}</span>
             </Button>
           </div>
         </div>

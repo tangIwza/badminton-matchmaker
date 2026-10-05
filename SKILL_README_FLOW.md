@@ -216,3 +216,7 @@ Users can customize names and grades in the **Player Management** drawer and cli
    - The user has requested: *"do not test just do the work and let me test"*.
    - Do NOT run automated browser subagents (`browser_subagent`) unless explicitly asked.
    - Run type checks (`npx tsc --noEmit`), lint (`npm run lint`), and unit tests (`npx vitest run`), then present the results clearly for the user to test in their browser.
+
+5. **PDF Export (A4 Template)**:
+   - Schedule export is generated using `src/lib/pdf.ts` (`exportScheduleToPdf`).
+   - Uses an A4 print template with native vector typography, full Thai glyph fidelity, score write-in boxes, and court marshal check boxes.
