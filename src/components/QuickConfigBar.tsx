@@ -120,25 +120,25 @@ export const QuickConfigBar: React.FC<QuickConfigBarProps> = ({
   };
 
   return (
-    <div className="flex min-w-0 flex-col justify-between gap-3 p-3 sm:p-4 rounded-xl bg-white dark:bg-zinc-900 border border-slate-200/90 dark:border-zinc-800 shadow-xs xl:flex-row xl:items-center">
-      <div className="flex min-w-0 flex-nowrap items-center gap-3 overflow-x-auto scrollbar-none sm:gap-5">
+    <div className="flex min-w-0 flex-col justify-between gap-2 sm:gap-3 p-2 sm:p-4 rounded-xl bg-white dark:bg-zinc-900 border border-slate-200/90 dark:border-zinc-800 shadow-xs xl:flex-row xl:items-center">
+      <div className="flex min-w-0 w-full items-center justify-between gap-1 sm:gap-4 overflow-hidden xl:w-auto xl:justify-start">
         {/* Number of Courts Stepper & Keyboard Input */}
-        <div className="flex shrink-0 items-center gap-2.5">
-          <div className="p-1.5 rounded-lg bg-sky-50 dark:bg-sky-950/40 text-sky-600 dark:text-sky-400">
-            <LayoutGrid className="h-4 w-4" />
+        <div className="flex shrink-0 items-center gap-1 sm:gap-2.5">
+          <div className="p-1 sm:p-1.5 rounded-lg bg-sky-50 dark:bg-sky-950/40 text-sky-600 dark:text-sky-400 shrink-0">
+            <LayoutGrid className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
           </div>
           <div>
             <label
               htmlFor="input-court-count"
-              className="block text-[10px] font-semibold uppercase tracking-wider text-slate-400 dark:text-zinc-500 cursor-pointer"
+              className="block text-[9px] sm:text-[10px] font-semibold uppercase tracking-wider text-slate-400 dark:text-zinc-500 cursor-pointer leading-tight"
             >
               Courts
             </label>
-            <div className="flex items-center gap-1.5 mt-0.5">
+            <div className="flex items-center gap-1 sm:gap-1.5 mt-0.5">
               <Button
                 variant="outline"
                 size="icon"
-                className="h-6 w-6 text-xs"
+                className="h-5 w-5 sm:h-6 sm:w-6 text-xs shrink-0"
                 disabled={courtCount <= 1}
                 onClick={() => {
                   const next = Math.max(1, courtCount - 1);
@@ -159,14 +159,14 @@ export const QuickConfigBar: React.FC<QuickConfigBarProps> = ({
                 onBlur={() => commitCourt(courtInput)}
                 onKeyDown={handleCourtKeyDown}
                 onFocus={(e) => e.target.select()}
-                className="w-10 h-6 text-center font-bold text-sm bg-slate-50 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 rounded-md text-slate-900 dark:text-zinc-100 tabular-nums focus:outline-hidden focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all cursor-text"
+                className="w-7 sm:w-10 h-5 sm:h-6 text-center font-bold text-xs sm:text-sm bg-slate-50 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 rounded-md text-slate-900 dark:text-zinc-100 tabular-nums focus:outline-hidden focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all cursor-text px-0"
                 aria-label="Number of courts"
                 title="Key in courts count (1-8)"
               />
               <Button
                 variant="outline"
                 size="icon"
-                className="h-6 w-6 text-xs"
+                className="h-5 w-5 sm:h-6 sm:w-6 text-xs shrink-0"
                 disabled={courtCount >= 8}
                 onClick={() => {
                   const next = Math.min(8, courtCount + 1);
@@ -177,32 +177,33 @@ export const QuickConfigBar: React.FC<QuickConfigBarProps> = ({
               >
                 +
               </Button>
-              <span className="text-xs text-slate-500 dark:text-zinc-400 ml-1 hidden sm:inline">
+              <span className="text-xs text-slate-500 dark:text-zinc-400 ml-1 hidden md:inline">
                 court{courtCount > 1 ? 's' : ''}
               </span>
             </div>
           </div>
         </div>
 
-        <div className="h-8 w-[1px] shrink-0 bg-slate-200 dark:bg-zinc-800 hidden sm:block" />
+        <div className="h-7 w-[1px] shrink-0 bg-slate-200 dark:bg-zinc-800 hidden md:block" />
 
         {/* Number of Games to Randomize Stepper & Keyboard Input */}
-        <div className="flex shrink-0 items-center gap-2.5">
-          <div className="p-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400">
-            <Calendar className="h-4 w-4" />
+        <div className="flex shrink-0 items-center gap-1.5 sm:gap-2.5">
+          <div className="p-1 sm:p-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 shrink-0">
+            <Calendar className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
           </div>
           <div>
             <label
               htmlFor="input-games-count"
-              className="block text-[10px] font-semibold uppercase tracking-wider text-slate-400 dark:text-zinc-500 cursor-pointer"
+              className="block text-[9px] sm:text-[10px] font-semibold uppercase tracking-wider text-slate-400 dark:text-zinc-500 cursor-pointer leading-tight truncate"
             >
-              Games to Randomize
+              <span className="hidden sm:inline">Games to Randomize</span>
+              <span className="sm:hidden">Games</span>
             </label>
-            <div className="flex items-center gap-1.5 mt-0.5">
+            <div className="flex items-center gap-1 sm:gap-1.5 mt-0.5">
               <Button
                 variant="outline"
                 size="icon"
-                className="h-6 w-6 text-xs"
+                className="h-5 w-5 sm:h-6 sm:w-6 text-xs shrink-0"
                 disabled={gamesToGenerate <= 1}
                 onClick={() => {
                   const next = Math.max(1, gamesToGenerate - 1);
@@ -223,14 +224,14 @@ export const QuickConfigBar: React.FC<QuickConfigBarProps> = ({
                 onBlur={() => commitGame(gameInput)}
                 onKeyDown={handleGameKeyDown}
                 onFocus={(e) => e.target.select()}
-                className="w-12 h-6 text-center font-bold text-sm bg-slate-50 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 rounded-md text-emerald-600 dark:text-emerald-400 tabular-nums focus:outline-hidden focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all cursor-text"
+                className="w-8 sm:w-12 h-5 sm:h-6 text-center font-bold text-xs sm:text-sm bg-slate-50 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 rounded-md text-emerald-600 dark:text-emerald-400 tabular-nums focus:outline-hidden focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all cursor-text px-0"
                 aria-label="Games to randomize"
                 title="Key in number of games (1-50)"
               />
               <Button
                 variant="outline"
                 size="icon"
-                className="h-6 w-6 text-xs"
+                className="h-5 w-5 sm:h-6 sm:w-6 text-xs shrink-0"
                 disabled={gamesToGenerate >= 50}
                 onClick={() => {
                   const next = Math.min(50, gamesToGenerate + 1);
@@ -241,14 +242,14 @@ export const QuickConfigBar: React.FC<QuickConfigBarProps> = ({
               >
                 +
               </Button>
-              <span className="text-xs text-slate-500 dark:text-zinc-400 ml-1 hidden sm:inline">
+              <span className="text-xs text-slate-500 dark:text-zinc-400 ml-1 hidden md:inline">
                 games ({gamesToGenerate * courtCount} matches)
               </span>
             </div>
           </div>
         </div>
 
-        <div className="h-8 w-[1px] shrink-0 bg-slate-200 dark:bg-zinc-800 hidden sm:block" />
+        <div className="h-7 w-[1px] shrink-0 bg-slate-200 dark:bg-zinc-800 hidden md:block" />
 
         {/* Player trigger - Moved behind number of game */}
         {onOpenPlayer && (
@@ -258,15 +259,15 @@ export const QuickConfigBar: React.FC<QuickConfigBarProps> = ({
               size="sm"
               id="btn-open-player"
               onClick={onOpenPlayer}
-              className="h-8 gap-2 border-slate-200 dark:border-zinc-700 hover:bg-slate-50 dark:hover:bg-zinc-800 text-slate-700 dark:text-zinc-300"
+              className="h-7 sm:h-8 px-1.5 sm:px-2.5 gap-1 sm:gap-2 border-slate-200 dark:border-zinc-700 hover:bg-slate-50 dark:hover:bg-zinc-800 text-slate-700 dark:text-zinc-300 shrink-0"
               title="Open Player management drawer"
             >
-              <Users className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
+              <Users className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
               <span className="font-semibold text-xs text-slate-800 dark:text-zinc-200">
                 Player
               </span>
               {typeof activeCount === 'number' && typeof totalCount === 'number' && (
-                <span className="px-1.5 py-0.2 text-[10px] font-bold rounded-full bg-slate-100 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 tabular-nums border border-slate-200/80 dark:border-zinc-700">
+                <span className="px-1.5 py-0.5 text-[10px] font-bold rounded-full bg-slate-100 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 tabular-nums border border-slate-200/80 dark:border-zinc-700">
                   {activeCount}/{totalCount}
                 </span>
               )}
@@ -276,7 +277,7 @@ export const QuickConfigBar: React.FC<QuickConfigBarProps> = ({
       </div>
 
       {/* Primary Actions */}
-      <div className="flex w-full items-center gap-2 pt-1 border-t border-slate-100 dark:border-zinc-800/80 xl:w-auto xl:border-t-0 xl:pt-0">
+      <div className="flex w-full items-center gap-2 pt-1.5 border-t border-slate-100 dark:border-zinc-800/80 xl:w-auto xl:border-t-0 xl:pt-0">
         <Button
           variant="outline"
           size="sm"
