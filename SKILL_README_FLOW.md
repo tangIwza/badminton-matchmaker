@@ -198,7 +198,7 @@ Users can customize names and grades in the **Player Management** drawer and cli
 ## 7. Instructions for Future AI Agents
 
 1. **Do Not Break Engine Invariants**:
-   - Always run `npx vitest run` before completing a task. All 15 tests must pass.
+   - Always run `npx vitest run` before completing a task. All 16 tests must pass.
    - Do not weaken `skillDelta <= 1` or allow splits with delta $> 1$.
    - Do not allow back-to-back benching (`consecutiveRests < 2`).
 
@@ -220,3 +220,7 @@ Users can customize names and grades in the **Player Management** drawer and cli
 5. **PDF Export (A4 Template)**:
    - Schedule export is generated using `src/lib/pdf.ts` (`exportScheduleToPdf`).
    - Uses an A4 print template with native vector typography, full Thai glyph fidelity, score write-in boxes, and court marshal check boxes.
+
+6. **Partner Affinity Boost (`boostTungtangYok`)**:
+   - Configurable in `SessionSettingsPanel.tsx` under **Advanced Penalty Weights**.
+   - When enabled, `scheduler.ts` prioritizes pairing ตึงตัง and หยก on the same team (applying a strong affinity discount `-2500` and exempting duplicate pair penalty between them) while strictly preserving match fairness (`skillDelta <= 1`).

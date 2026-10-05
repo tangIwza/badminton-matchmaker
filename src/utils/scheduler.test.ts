@@ -298,4 +298,60 @@ describe('Scheduler Engine Invariants', () => {
       }
     }
   });
+
+  it('16. Boost Pairing: when boostTungtangYok is enabled, pairing frequency of ตึงตัง and หยก increases significantly', () => {
+    // 8 players including ตึงตัง and หยก
+    const tungtang: Player = { ...INITIAL_MOCK_PLAYERS[0]!, id: 'p-tungtang', name: 'ตึงตัง', skill: 3 };
+    const yok: Player = { ...INITIAL_MOCK_PLAYERS[1]!, id: 'p-yok', name: 'หยก', skill: 3 };
+    const others: Player[] = [
+      { ...INITIAL_MOCK_PLAYERS[2]!, id: 'p3', name: 'P3', skill: 4 },
+      { ...INITIAL_MOCK_PLAYERS[3]!, id: 'p4', name: 'P4', skill: 4 },
+      { ...INITIAL_MOCK_PLAYERS[4]!, id: 'p5', name: 'P5', skill: 3 },
+      { ...INITIAL_MOCK_PLAYERS[5]!, id: 'p6', name: 'P6', skill: 2 },
+      { ...INITIAL_MOCK_PLAYERS[6]!, id: 'p7', name: 'P7', skill: 2 },
+      { ...INITIAL_MOCK_PLAYERS[0]!, id: 'p8', name: 'P8', skill: 1 },
+    ];
+    const roster = [tungtang, yok, ...others];
+
+    const countPairs = (boost: boolean): { timesBothPlayed: number; timesPaired: number } => {
+      const settings: SessionSettings = {
+        ...DEFAULT_SETTINGS,
+        courtCount: 1,
+        gamesToGenerate: 10,
+        boostTungtangYok: boost,
+      };
+      let timesBothPlayed = 0;
+      let timesPaired = 0;
+
+      for (let s = 1; s <= 10; s++) {
+        const scheduleResult = generateSessionSchedule(roster, settings, s * 999);
+        for (const round of scheduleResult.rounds) {
+          for (const match of round.matches) {
+            expect(match.skillDelta).toBeLessThanOrEqual(1);
+            const all4 = [...match.teamA.playerIds, ...match.teamB.playerIds];
+            if (all4.includes(tungtang.id) && all4.includes(yok.id)) {
+              timesBothPlayed++;
+              const isPartnerA = match.teamA.playerIds.includes(tungtang.id) && match.teamA.playerIds.includes(yok.id);
+              const isPartnerB = match.teamB.playerIds.includes(tungtang.id) && match.teamB.playerIds.includes(yok.id);
+              if (isPartnerA || isPartnerB) {
+                timesPaired++;
+              }
+            }
+          }
+        }
+      }
+      return { timesBothPlayed, timesPaired };
+    };
+
+    const withoutBoost = countPairs(false);
+    const withBoost = countPairs(true);
+
+    const rateWithout = withoutBoost.timesBothPlayed > 0 ? withoutBoost.timesPaired / withoutBoost.timesBothPlayed : 0;
+    const rateWith = withBoost.timesBothPlayed > 0 ? withBoost.timesPaired / withBoost.timesBothPlayed : 0;
+
+    // Rate with boost should be significantly higher (typically >= 70% vs ~20-30% without boost)
+    expect(rateWith).toBeGreaterThan(rateWithout);
+    expect(rateWith).toBeGreaterThanOrEqual(0.7);
+  });
 });
+

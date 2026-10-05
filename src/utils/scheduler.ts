@@ -29,6 +29,7 @@ export const DEFAULT_SETTINGS: SessionSettings = {
   tierThreshold: 1,
   weights: DEFAULT_WEIGHTS,
   projectedRounds: 2,
+  boostTungtangYok: false,
 };
 
 export interface ScoringContext {
@@ -38,6 +39,19 @@ export interface ScoringContext {
   carryTotal: number;
   /** Optional RNG used only to break exact cost ties fairly (never affects cost values). */
   rng?: Rng;
+  boostTungtangYok?: boolean;
+}
+
+export function isTungtang(p: Player): boolean {
+  return p.id === 'p-tungtang' || p.name.includes('ตึงตัง');
+}
+
+export function isYok(p: Player): boolean {
+  return p.id === 'p-yok' || p.name.includes('หยก');
+}
+
+export function isTungtangYokPair(p1: Player, p2: Player): boolean {
+  return (isTungtang(p1) && isYok(p2)) || (isYok(p1) && isTungtang(p2));
 }
 
 export interface ClassifiedGroup {
@@ -194,9 +208,24 @@ export function scoreGroup(
     }
 
     // 4. Duplicate pair penalty: (timesPaired ** 2) * weight
-    const pairA = getPairCount(teamA[0], teamA[1].id);
-    const pairB = getPairCount(teamB[0], teamB[1].id);
-    const duplicatePairCost = (pairA * pairA + pairB * pairB) * w.duplicatePair;
+    let pairA = getPairCount(teamA[0], teamA[1].id);
+    let pairB = getPairCount(teamB[0], teamB[1].id);
+    let pairAffinityBonus = 0;
+
+    if (ctx.boostTungtangYok) {
+      const isPairA = isTungtangYokPair(teamA[0], teamA[1]);
+      const isPairB = isTungtangYokPair(teamB[0], teamB[1]);
+      if (isPairA) {
+        pairA = 0; // Exempt from duplicate penalty
+        pairAffinityBonus -= 2500; // Substantial priority discount to pair together
+      }
+      if (isPairB) {
+        pairB = 0; // Exempt from duplicate penalty
+        pairAffinityBonus -= 2500; // Substantial priority discount to pair together
+      }
+    }
+
+    const duplicatePairCost = (pairA * pairA + pairB * pairB) * w.duplicatePair + pairAffinityBonus;
 
     // 5. Repeat opponent penalty
     const oppCount =
@@ -397,6 +426,7 @@ export function generateRound(
       weights: settings.weights,
       tieredTotal: players.reduce((sum, p) => sum + p.tieredCount, 0) / 4,
       carryTotal: players.reduce((sum, p) => sum + p.carryCount, 0) / 4,
+      boostTungtangYok: settings.boostTungtangYok,
     };
 
     for (const subset of candidateSubsets) {
@@ -448,6 +478,7 @@ export function generateRound(
       weights: settings.weights,
       tieredTotal,
       carryTotal,
+      boostTungtangYok: settings.boostTungtangYok,
     };
 
     for (const combo of combos) {
@@ -489,6 +520,7 @@ export function generateRound(
         weights: settings.weights,
         tieredTotal: tTotal,
         carryTotal: cTotal,
+        boostTungtangYok: settings.boostTungtangYok,
       };
       const { classified, cost } = scoreGroup(group, ctx);
       totalCost += cost.total;
@@ -606,6 +638,7 @@ export function generateRound(
       weights: settings.weights,
       tieredTotal: finalTieredTotal,
       carryTotal: finalCarryTotal,
+      boostTungtangYok: settings.boostTungtangYok,
       rng, // fair random choice among equally-good team splits
     };
 

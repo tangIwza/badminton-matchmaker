@@ -7,7 +7,8 @@ import { Button } from './ui/Button';
 import { Input } from './ui/Input';
 import { Slider } from './ui/Slider';
 import { DEFAULT_WEIGHTS } from '@/utils/scheduler';
-import { Sliders, ChevronDown, ChevronUp, RotateCcw, Info } from 'lucide-react';
+import { Sliders, ChevronDown, ChevronUp, RotateCcw, Info, Sparkles } from 'lucide-react';
+import { cn } from '@/lib/cn';
 
 export interface SessionSettingsPanelProps {
   open: boolean;
@@ -288,12 +289,79 @@ export const SessionSettingsPanel: React.FC<SessionSettingsPanelProps> = ({
                 </div>
               </div>
 
+              {/* Boost Pair: ตึงตัง + หยก */}
+              <div
+                className={cn(
+                  'p-3 rounded-xl border transition-all',
+                  settings.boostTungtangYok
+                    ? 'bg-emerald-50/80 border-emerald-300 dark:bg-emerald-950/40 dark:border-emerald-700 shadow-2xs'
+                    : 'bg-slate-50 border-slate-200 dark:bg-zinc-800/50 dark:border-zinc-700/60'
+                )}
+              >
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <div
+                      className={cn(
+                        'p-1.5 rounded-lg shrink-0 transition-colors',
+                        settings.boostTungtangYok
+                          ? 'bg-emerald-500 text-white'
+                          : 'bg-slate-200 dark:bg-zinc-700 text-slate-500 dark:text-zinc-400'
+                      )}
+                    >
+                      <Sparkles className="h-4 w-4" />
+                    </div>
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <span className="text-xs font-bold text-slate-900 dark:text-zinc-100">
+                          Special Shuffle
+                        </span>
+                        {settings.boostTungtangYok && (
+                          <span className="px-1.5 py-0.5 text-[9px] font-bold rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200 border border-emerald-200 dark:border-emerald-700">
+                            Active
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-[10px] text-slate-500 dark:text-zinc-400 mt-0.5 leading-tight">
+                        Special shuffle
+                      </p>
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    id="btn-toggle-boost-tungtang-yok"
+                    onClick={() =>
+                      onUpdateSettings({
+                        boostTungtangYok: !settings.boostTungtangYok,
+                      })
+                    }
+                    className={cn(
+                      'relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-hidden',
+                      settings.boostTungtangYok
+                        ? 'bg-emerald-600'
+                        : 'bg-slate-300 dark:bg-zinc-600'
+                    )}
+                    role="switch"
+                    aria-checked={Boolean(settings.boostTungtangYok)}
+                    title="Toggle Special Shuffle"
+                  >
+                    <span
+                      className={cn(
+                        'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-md ring-0 transition duration-200 ease-in-out',
+                        settings.boostTungtangYok ? 'translate-x-5' : 'translate-x-0'
+                      )}
+                    />
+                  </button>
+                </div>
+              </div>
+
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() =>
                   onUpdateSettings({
                     weights: DEFAULT_WEIGHTS,
+                    boostTungtangYok: false,
                   })
                 }
                 className="w-full text-xs text-slate-600 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-zinc-100 gap-1.5"

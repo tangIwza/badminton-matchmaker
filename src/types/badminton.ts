@@ -71,6 +71,7 @@ export interface SessionSettings {
   tierThreshold: number; // default: 2
   weights: PenaltyWeights;
   projectedRounds: number; // default: 2
+  boostTungtangYok?: boolean; // When true, significantly prioritizes pairing ตึงตัง and หยก together
 }
 
 export interface SchedulerStats {
