@@ -3,7 +3,7 @@
 import React from 'react';
 import {
   Settings,
-  Trophy,
+  Menu,
 } from 'lucide-react';
 import { Button } from './ui/Button';
 import { ThemeToggle } from './ThemeToggle';
@@ -16,6 +16,7 @@ export interface AppTopBarProps {
   gamesToGenerate: number;
   canUndo?: boolean;
   canGenerate?: boolean;
+  onOpenNavigation?: () => void;
   onOpenRoster?: () => void;
   onOpenSettings: () => void;
   onShuffleSchedule?: () => void;
@@ -26,6 +27,7 @@ export const AppTopBar: React.FC<AppTopBarProps> = ({
   sessionName,
   courtCount,
   gamesToGenerate,
+  onOpenNavigation,
   onOpenSettings,
 }) => {
   return (
@@ -33,9 +35,16 @@ export const AppTopBar: React.FC<AppTopBarProps> = ({
       <div className="max-w-[1440px] mx-auto w-full px-3 sm:px-4 md:px-6 min-h-16 py-2.5 sm:py-0 flex items-center justify-between gap-2 sm:gap-4">
         {/* Brand & Session Name */}
         <div className="flex items-center gap-3 min-w-0">
-          <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-700 flex items-center justify-center text-white shadow-md shadow-emerald-500/20 shrink-0">
-            <Trophy className="h-5 w-5" />
-          </div>
+          <button
+            type="button"
+            id="btn-open-navigation"
+            onClick={onOpenNavigation}
+            className="h-9 w-9 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-700 flex items-center justify-center text-white shadow-md shadow-emerald-500/20 shrink-0 hover:from-emerald-600 hover:to-teal-800 transition-all cursor-pointer focus:outline-hidden focus:ring-2 focus:ring-emerald-500 active:scale-95"
+            title="Open navigation menu"
+            aria-label="Open navigation menu"
+          >
+            <Menu className="h-5 w-5" />
+          </button>
           <div className="min-w-0">
             <div className="flex items-center gap-2">
               <span className="font-bold text-sm tracking-tight text-slate-900 dark:text-zinc-100 truncate">

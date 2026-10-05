@@ -222,5 +222,12 @@ Users can customize names and grades in the **Player Management** drawer and cli
    - Uses an A4 print template with native vector typography, full Thai glyph fidelity, score write-in boxes, and court marshal check boxes.
 
 6. **Partner Affinity Boost (`boostTungtangYok`)**:
-   - Configurable in `SessionSettingsPanel.tsx` under **Advanced Penalty Weights**.
+   - Configurable in `SessionSettingsPanel.tsx` under **Advanced Penalty Weights** labeled as **Special Shuffle**.
    - When enabled, `scheduler.ts` prioritizes pairing ตึงตัง and หยก on the same team (applying a strong affinity discount `-2500` and exempting duplicate pair penalty between them) while strictly preserving match fairness (`skillDelta <= 1`).
+
+7. **Multi-Feature Navigation (Hamburger Menu & Schedule Page)**:
+   - Hamburger button on the top-left of `AppTopBar.tsx` opens `NavigationDrawer.tsx`.
+   - Feature 1: **Random Games** (CourtFlow matchmaking & court allocation).
+   - Feature 2: **Schedule Page** (`ScheduleView.tsx`):
+     - **Add Schedule Modal** (`AddScheduleModal.tsx`): Creates court booking polls with custom Court Name and multiple candidate Date & Time options (`TimeSlotOption[]`).
+     - **Interactive Voting Poll Cards** (`SchedulePollCard.tsx`): Allows club members to vote/unvote on preferred date/times with progress bars, voter tags, and a "Copy for LINE" button formatted for Thai badminton group chats. Data is persisted to `localStorage` (`courtflow:schedules:v1`).
